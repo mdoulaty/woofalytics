@@ -1,2 +1,54 @@
 # woofalytics
 AI Powered Woof Analytics!
+
+This project utilises a Raspberry Pi and a microphone array to identify dog barks. It includes a straightforward pre-trained model, but you also have the option to customise and train it to meet your specific needs.
+
+The primary motivation behind this project was to differentiate between our neighbor's dog's barking and our own dog's vocalisations. The issue I aimed to address was as follows: when our neighbor's dog barked, it triggered our dog to respond with barking, leading to an incessant cycle of noise. To disrupt this pattern, some dog trainers recommended providing our dog with treats when the neighbor's dog barked, diverting his attention to something more exciting (such as eating treats) instead of barking in response. To accomplish this, I developed this project and further automated it automatic treat dispensers (which are not included in this repo), and it has proven to be remarkably effective, almost like magic!
+
+# Hardware Setup
+I deployed this solution on a Raspberry Pi 4 computer equipped with a dual-channel microphone array. The Raspberry Pi is operating on the 64-bit version of the Raspberry Pi OS. The microphone utilised in this setup is manufactured by Andrea Electronics. For additional information about the microphone, please visit the [Andrea Electronics website](https://andreaelectronics.com/array-microphone/).
+A sample photo of the micrphone array:
+![PureAudio™ USB Array Microphone](https://andreaelectronics.com/wp-content/uploads/2020/09/Andrea-PureAudio-New-USB-Array-Microphone-1024x424-1.jpg)
+
+The great news is that it doesn't require any driver installation on the Raspberry Pi 4 (I used 64-bit version of the Raspberry Pi OS).
+
+# Software Setup
+The code is based on Python. First install the dependency packages:
+```shell
+$ pip install -r requirements.txt
+```
+
+And to run the main code, just run `main.py`:
+```shell
+$ python main.py
+```
+
+If all packages are installed and there are no other problems, you should see some message like:
+```
+INFO:Main:Starting Woofalytics server, press Ctrl+C to stop...
+INFO:Woofalytics:Starting recording loop...
+DEBUG:Woofalytics:Clip past context seconds: 15, number of frames: 3000
+DEBUG:Woofalytics:Clip future context seconds: 15, number of frames: 3000
+Starting server on port 8000...
+INFO:Woofalytics:Window len #samples: 264, overlap #samples: 132
+[2023-10-03T22:46:37.611563, 090, 090, 090]: Not barking: 0.007565224077552557
+```
+the last line shows direction of arrival of the audio to the microphone array using three different algorithms (hence three times `090`), followed by probability of barking, which in this case is almost zero. 
+
+## Web Interface
+If you want to see a visualisation of bark probabilities in real-time, you can navigate to `http://127.0.0.1:8000` and you should see a screen similar to this:
+![Kiku](misc/home.png)
+
+There are a few mode endpoints, such as `/api/bark` which return a JSON struct containing the bark probablity in realtime. This can be used for further automation. In case you would like this setup to be used for data collection, you can navigate to `/rec` and see a `Record` button that will store an audio clip from 30 seconds before the time you pressed the record button for another 30 seconds. This can later be used for training your own model if you want to distinguish different dog barks from each other. 
+
+## IFTTT Integration
+If you want to trigger some actions when a dog bark is detected, you can use the IFTTT integration. You just need to update `record.py` and set these two values:
+```python
+IFTTT_EVENT_NAME = "woof"
+IFTTT_KEY = "YOUR_IFTTT_WEBHOOKS_KEY"
+```
+
+it uses WebHooks and you can further automate actions using this trigger. Any smart device that works with IFTTT can be used, such as [Aqara Smart Pet Feeder C1](https://www.aqara.com/eu/product/smart-pet-feeder-c1/).
+
+# Re-training the Model
+Check out `notebooks/woofalytics-model.ipynb` notebook for more details. Hopefully everything should be self explanatory there. I included some sample recordings just to make sure you can run the notebook as-is.
