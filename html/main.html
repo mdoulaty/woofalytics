@@ -87,13 +87,13 @@
         // Function to fetch data from the endpoint
         async function fetchData() {
             try {
-                const response = await fetch('http://192.168.68.112:8000/api/bark');
+                const response = await fetch('http://127.0.0.1:8000/api/bark');
                 const data = await response.json();
                 
                 // Add the new data point to the chart
                 const timeNow = new Date();
                 chart.data.labels.push(timeNow.toISOString());
-                chart.data.datasets[0].data.push(data.bark_probability);
+                chart.data.datasets[0].data.push(data.bark_probability * 100.0);
 
                 // Remove old data points to keep the chart's data within the defined duration
                 if (chart.data.labels.length > 10) {

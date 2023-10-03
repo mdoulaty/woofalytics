@@ -50,10 +50,12 @@ class Woofalytics:
 
         self._worker_thread = None
 
-        # self.set_mic_volume()
+        self.set_mic_volume()
 
         self._model = torch.jit.load("./models/traced_model.pt")
         self._model.eval()
+        self._logger.debug(f"Model loaded as: {self._model}")
+
         self._model_window_size = 6
         self._model_window_overlap = 3
         self._model_last_pred = {
@@ -284,8 +286,10 @@ class Woofalytics:
                     f"{datetime.datetime.now().isoformat()}\t{pred}\t{doa1}\t{doa2}\t{doa3}\n"
                 )
             last_preds.append(1)
+
             if len(last_preds) >= 6:
                 del last_preds[0]
+
             if sum(last_preds) >= 3:
                 if self.ef.fire():
                     self.ifttt_event()
@@ -293,15 +297,16 @@ class Woofalytics:
         else:
             if len(last_preds) > 0:
                 del last_preds[0]
-                print(
-                    f"[{datetime.datetime.now().isoformat()}, {doa1:03d}, {doa2:03d}, {doa3:03d}]: Not barking: {pred}\r",
-                    end="",
-                )
-
+            print(
+                f"[{datetime.datetime.now().isoformat()}, {doa1:03d}, {doa2:03d}, {doa3:03d}]: Not barking: {pred}\r",
+                end="",
+            )
 
     def ifttt_event(self):
         # URL for the Maker Webhooks API endpoint
-        ifttt_url = f"https://maker.ifttt.com/trigger/{IFTTT_EVENT_NAME}/with/key/{IFTTT_KEY}"
+        ifttt_url = (
+            f"https://maker.ifttt.com/trigger/{IFTTT_EVENT_NAME}/with/key/{IFTTT_KEY}"
+        )
 
         # Send the HTTP POST request to trigger the IFTTT applet
         response = requests.post(ifttt_url)

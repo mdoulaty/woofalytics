@@ -29,7 +29,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             query_params = parse_qs(urlparse(self.path).query)
             button_number = query_params.get("button", [None])[0]
             if button_number and button_number == "rec":
-                wr.store_clip()
+                wa.store_clip()
                 self.send_response(200)
                 self.send_header("Content-type", "text/plain")
                 self.end_headers()
@@ -44,12 +44,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            json_data = wr.get_last_pred().copy()
+            json_data = wa.get_last_pred().copy()
             # bark_probability is a list, pick the max?
             if len(json_data["bark_probability"]) > 1:
-                json_data["bark_probability"] = (
-                    max(json_data["bark_probability"]) * 100.0
-                )
+                json_data["bark_probability"] = max(json_data["bark_probability"])
             else:
                 json_data["bark_probability"] = 0
 
@@ -61,12 +59,12 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 def term_handler(signum, frame):
     logger.info("Ctrl+C pressed.")
-    wr.stop()
+    wa.stop()
     exit(1)
 
 
 signal.signal(signal.SIGINT, term_handler)
-wr = Woofalytics()
+wa = Woofalytics()
 
 
 def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000):
@@ -78,7 +76,7 @@ def run_server(server_class=HTTPServer, handler_class=RequestHandler, port=8000)
 
 def main():
     logger.info("Starting Woofalytics server, press Ctrl+C to stop...")
-    wr.start()
+    wa.start()
     run_server()
 
 
