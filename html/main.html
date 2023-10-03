@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Data Visualization</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Add mobile-friendly styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        #chart {
+            max-width: 100%;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <canvas id="chart" width="800" height="400"></canvas>
+    </div>
+    <script>
+        // Get a reference to the chart canvas element
+        const ctx = document.getElementById('chart').getContext('2d');
+
+        // Initialize the Chart.js chart
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],  // Time labels
+                datasets: [{
+                    label: 'Percentage Value',
+                    data: [],  // Percentage values
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false,
+                }],
+            },
+            options: {
+                scales: {
+                    x: [{
+                        type: 'realtime',  // Enable real-time scaling on the x-axis
+                        realtime: {
+                            duration: 10000,  // Display data for the last 10 seconds
+                            refresh: 1000,   // Refresh data every 1 second
+                            delay: 1000,     // Delay initial data display for 1 second
+                        },
+                    }],
+                    y: {
+                        min: 0,
+                        max: 100,
+                    },
+                },
+                // Add horizontal line at y=80
+                annotation: {
+                    annotations: [{
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                        value: 80,
+                        borderColor: 'red',
+                        borderWidth: 2,
+                    }],
+                },
+                // Add horizontal line at y=80 using afterDraw hook
+                plugins: {
+                    afterDraw: (chart) => {
+                        const ctx = chart.ctx;
+                        const yValue = chart.scales.y.getPixelForValue(90);
+                        ctx.strokeStyle = 'red';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(chart.chartArea.left, yValue);
+                        ctx.lineTo(chart.chartArea.right, yValue);
+                        ctx.stroke();
+                    },
+                },
+            },
+        });
+
+        // Function to fetch data from the endpoint
+        async function fetchData() {
+            try {
+                const response = await fetch('http://192.168.68.112:8000/api/bark');
+                const data = await response.json();
+                
+                // Add the new data point to the chart
+                const timeNow = new Date();
+                chart.data.labels.push(timeNow.toISOString());
+                chart.data.datasets[0].data.push(data.bark_probability);
+
+                // Remove old data points to keep the chart's data within the defined duration
+                if (chart.data.labels.length > 10) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                // Update the chart
+                chart.update();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Fetch data every second
+        setInterval(fetchData, 2000);
+    </script>
+</body>
+</html>

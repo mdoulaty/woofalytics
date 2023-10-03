@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WoofGuard</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        /* Add a media query for smaller screens (adjust the max-width as needed) */
+        @media (max-width: 480px) {
+            button {
+                font-size: 16px; /* Further reduce font size for smaller screens */
+                padding: 12px 24px; /* Adjust padding for smaller buttons */
+            }
+
+            #message {
+                font-size: 16px; /* Adjust font size for the message on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Teddy is a good boy ;)</h1>
+    <button id="rec_button">Record</button>
+    <p id="message"></p>
+    <script>
+        document.getElementById("rec_button").addEventListener("click", function() {
+            fetch("/store-record?button=rec")
+                .then(response => response.text())
+                .then(message => {
+                    document.getElementById("message").textContent = message;
+                });
+        });
+    </script>
+</body>
+</html>
