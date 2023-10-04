@@ -1,12 +1,12 @@
 # woofalytics
 AI Powered Woof Analytics!
 
-This project utilises a Raspberry Pi and a microphone array to identify dog barks. It includes a straightforward pre-trained model, but you also have the option to customise and train it to meet your specific needs.
+This project utilises a Raspberry Pi and a microphone array to identify dog barks and direction of arrival. It includes a straightforward pre-trained model, but you also have the option to customise and train it to meet your specific needs.
 
 The primary motivation behind this project was to differentiate between our neighbor's dog's barking and our own dog's vocalisations. The issue I aimed to address was as follows: when our neighbor's dog barked, it triggered our dog to respond with barking, leading to an incessant cycle of noise. To disrupt this pattern, some dog trainers recommended providing our dog with treats when the neighbor's dog barked, diverting his attention to something more exciting (such as eating treats) instead of barking in response. To accomplish this, I developed this project and further automated it automatic treat dispensers (which are not included in this repo), and it has proven to be remarkably effective, almost like magic!
 
 # Hardware Setup
-I deployed this solution on a Raspberry Pi 4 computer equipped with a dual-channel microphone array. The Raspberry Pi is running the 64-bit version of the Raspberry Pi OS. The microphone array utilised in this setup is manufactured by Andrea Electronics. For additional information about the microphone, please visit the [Andrea Electronics website](https://andreaelectronics.com/array-microphone/).
+I deployed this solution on a Raspberry Pi 4 computer equipped with a dual-channel microphone array. The Raspberry Pi is running the 64-bit version of the Raspberry Pi OS. The microphone array utilised in this setup is manufactured by Andrea Electronics. It is a linear array of two microphones. For additional information about the microphone, please visit the [Andrea Electronics website](https://andreaelectronics.com/array-microphone/).
 A sample photo of the micrphone array:
 ![PureAudio™ USB Array Microphone](https://andreaelectronics.com/wp-content/uploads/2020/09/Andrea-PureAudio-New-USB-Array-Microphone-1024x424-1.jpg)
 
@@ -70,7 +70,10 @@ IFTTT_KEY = "YOUR_IFTTT_WEBHOOKS_KEY"
 ```
 
 it uses WebHooks and you can further automate actions using this trigger. Any smart device that works with IFTTT can be used, such as [Aqara Smart Pet Feeder C1](https://www.aqara.com/eu/product/smart-pet-feeder-c1/) which I initially used for my project. Sample notifications from IFTTT integration:
+
 ![IFTTT Notifications](misc/ifttt-notifications.jpg)
 
 # Re-training the Model
 Please refer to the `notebooks/woofalytics-model.ipynb` notebook for additional information. Everything should be fairly self-explanatory there, although it may appear a bit disorganised. I've also included some sample recordings to ensure that you can run the notebook without any issues.
+
+At its core, the model is simple feed-forward neural network with 2 hidden layers and a sigmoid output emitting probability of barking for its input. The inputs are 80-dimensional log Mel filterbanks extracted from 60ms of audio. The network is small enough to work in realtime without consuming too much memory or power.
