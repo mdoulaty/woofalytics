@@ -51,7 +51,7 @@ the last line shows direction of arrival of the audio to the microphone array es
 
 ## Web Interface
 If you want to see a visualisation of bark probabilities in real-time, you can navigate to `http://127.0.0.1:8000` and you should see a screen similar to this:
-![Bark Probability Visualisation](misc/home.png)
+![Bark Probability Visualisation](misc/home-page-bark-plot.gif)
 
 There are a few more endpoints, such as `/api/bark` which will return a JSON struct containing the bark probablity in realtime:
 ```json
