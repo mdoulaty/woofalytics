@@ -13,7 +13,21 @@ A sample photo of the micrphone array:
 The reason for using this microphone array is that it doesn't require any driver installation on the Raspberry Pi 4 (I used 64-bit version of the Raspberry Pi OS).
 
 # Software Setup
-The code is based on Python. First install the dependency packages:
+
+First install a few packages for audio capture on the Pi OS:
+
+```shell
+# This is tested on Raspberry Pi OS (Debian GNU/Linux 11 (bullseye) / aarch64)
+$ sudo apt update
+$ sudo apt install \
+    build-essential \
+    libportaudio2 \
+    libasound2-dev \
+    libusb-1.0-0-dev \
+    python3-pyaudio
+```
+
+The code is based on Python. Continue installing the rest of the dependency packages:
 ```shell
 $ pip install -r requirements.txt
 ```
