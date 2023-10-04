@@ -47,7 +47,9 @@ Starting server on port 8000...
 INFO:Woofalytics:Window len #samples: 264, overlap #samples: 132
 [2023-10-03T22:46:37.611563, 090, 090, 090]: Not barking: 0.007565224077552557
 ```
-the last line shows direction of arrival of the audio to the microphone array estimated using three different algorithms (hence three times `090`), followed by probability of barking, which in this case is almost zero. 
+the last line shows direction of arrival of the audio to the microphone array estimated using three different algorithms (hence three times `090`), followed by probability of barking, which in this case is almost zero. It should keep showing the bark probability in realtime:
+
+![main script](misc/main-script.gif)
 
 ## Web Interface
 If you want to see a visualisation of bark probabilities in real-time, you can navigate to `http://127.0.0.1:8000` and you should see a screen similar to this:
